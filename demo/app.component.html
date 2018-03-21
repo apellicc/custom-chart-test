@@ -3,20 +3,20 @@
     <div style="position: absolute; top: 50px; left: 50px; right: 50px; bottom: 50px;">
      
       <ngx-charts-line-chart
-        *ngIf="chartType === 'line-chart'"
         class="chart-container"
         [scheme]="colorScheme"
         [schemeType]="schemeType"
         [results]="dataArmandoTest"
         [animations]="animations"
-        [legend]="showLegend"
-        [legendTitle]="legendTitle"
-        (legendLabelClick)="onLegendLabelClick($event)"
+
         [gradient]="gradient"
         [xAxis]="showXAxis"
         [yAxis]="showYAxis"
-        [showXAxisLabel]="showXAxisLabel"
-        [showYAxisLabel]="showYAxisLabel"
+
+
+        [activeEntries] = "test"
+        (deactivate) = "onActivateAndDeactivate('false')"
+        (activate) = "onActivateAndDeactivate('true')"
 
         [autoScale]="autoScale"
         [xScaleMin]="xScaleMin"
@@ -26,8 +26,7 @@
         [timeline]="timeline"
         [rangeFillOpacity]="rangeFillOpacity"
         [tooltipDisabled]="tooltipDisabled"
-        (select)="select($event)"
-        [activeEntries]="test">
+        (select)="select($event)">
       </ngx-charts-line-chart>
     
   </div>

@@ -436,14 +436,14 @@ export class LineChartComponent extends BaseChartComponent {
 
   updateHoveredVertical(item): void {
     this.hoveredVertical = item.value;
-    this.deactivateAll();
+    this.activateAll();
   }
 
-  @HostListener('mouseleave')
-  hideCircles(): void {
-    this.hoveredVertical = null;
-    this.deactivateAll();
-  }
+  // @HostListener('mouseleave')
+  // hideCircles(): void {
+  //   this.hoveredVertical = null;
+  //   this.activateAll();
+  // }
 
   onClick(data, series?): void {
     if (series) {
@@ -497,7 +497,7 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   onActivate(item) {
-    this.deactivateAll();
+    this.activateAll();
 
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value;
@@ -521,7 +521,16 @@ export class LineChartComponent extends BaseChartComponent {
     this.deactivate.emit({ value: item, entries: this.activeEntries });
   }
 
+  activateAll() {
+    this.activeEntries = [...this.results];
+    for (const entry of this.activeEntries) {
+      this.activate.emit({ value: entry, entries: [] });
+    }
+    this.activeEntries = [...this.results];
+  }
+
   deactivateAll() {
+    console.log("erwfbj w3bg  3'bn");
     this.activeEntries = [...this.activeEntries];
     for (const entry of this.activeEntries) {
       this.deactivate.emit({ value: entry, entries: [] });

@@ -4,11 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { APP_BASE_HREF, Location } from '@angular/common';
 import { AppComponent } from './app.component';
-import { SparklineComponent } from './sparkline/sparkline.component';
-import { TimelineFilterBarChartComponent } from './timeline-filter-bar-chart/timeline-filter-bar-chart.component';
 import { NgxChartsModule } from '../src';
 import { NgxUIModule } from '@swimlane/ngx-ui';
-import { ComboChartComponent, ComboSeriesVerticalComponent } from './combo-chart';
 
 @NgModule({
   providers: [
@@ -25,11 +22,7 @@ import { ComboChartComponent, ComboSeriesVerticalComponent } from './combo-chart
     NgxUIModule
   ],
   declarations: [
-    AppComponent,
-    SparklineComponent,
-    TimelineFilterBarChartComponent,
-    ComboChartComponent,
-    ComboSeriesVerticalComponent
+    AppComponent
   ],
   bootstrap: [AppComponent]
 })
