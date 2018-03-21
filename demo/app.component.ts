@@ -8,15 +8,11 @@ import * as d3 from 'd3';
 import { colorSets } from '../src/utils/color-sets';
 import { formatLabel } from '../src/common/label.helper';
 import {
-  single,
-  multi,
-  bubble,
   generateData,
   generateData2,
   generateGraph,
   treemap,
   timelineFilterBarData,
-  fiscalYearReport
 } from './data';
 import { data as countries } from 'emoji-flags';
 import chartGroups from './chartTypes';
@@ -54,7 +50,6 @@ export class AppComponent implements OnInit {
   countries: any[];
   single: any[];
   multi: any[];
-  fiscalYearReport: any[];
   dateData: any[];
   dataArmando: any[];
   dateDataWithRange: any[];
@@ -80,14 +75,9 @@ export class AppComponent implements OnInit {
   legendTitle = 'Legend';
   showXAxisLabel = true;
   tooltipDisabled = false;
-  xAxisLabel = 'Country';
-  showYAxisLabel = true;
-  yAxisLabel = 'GDP Per Capita';
-  showGridLines = true;
   innerPadding = '10%';
   barPadding = 8;
   groupPadding = 16;
-  roundDomains = false;
   maxRadius = 10;
   minRadius = 3;
   showSeriesOnHover = true;
@@ -98,45 +88,14 @@ export class AppComponent implements OnInit {
   yScaleMin: number;
   yScaleMax: number;
 
-  curves = {
-    Basis: shape.curveBasis,
-    'Basis Closed': shape.curveBasisClosed,
-    Bundle: shape.curveBundle.beta(1),
-    Cardinal: shape.curveCardinal,
-    'Cardinal Closed': shape.curveCardinalClosed,
-    'Catmull Rom': shape.curveCatmullRom,
-    'Catmull Rom Closed': shape.curveCatmullRomClosed,
-    Linear: shape.curveLinear,
-    'Linear Closed': shape.curveLinearClosed,
-    'Monotone X': shape.curveMonotoneX,
-    'Monotone Y': shape.curveMonotoneY,
-    Natural: shape.curveNatural,
-    Step: shape.curveStep,
-    'Step After': shape.curveStepAfter,
-    'Step Before': shape.curveStepBefore,
-    default: shape.curveLinear
-  };
-
-  // line interpolation
-  curveType: string = 'Linear';
-  curve: any = this.curves[this.curveType];
-  interpolationTypes = [
-    'Basis', 'Bundle', 'Cardinal', 'Catmull Rom', 'Linear', 'Monotone X',
-    'Monotone Y', 'Natural', 'Step', 'Step After', 'Step Before'
-  ];
-
-  closedCurveType: string = 'Linear Closed';
-  closedCurve: any = this.curves[this.closedCurveType];
-  closedInterpolationTypes = [
-    'Basis Closed', 'Cardinal Closed', 'Catmull Rom Closed', 'Linear Closed'
-  ];
 
   colorSets: any;
   colorScheme: any;
   schemeType: string = 'ordinal';
   selectedColorScheme: string;
-  rangeFillOpacity: number = 0.15;
+  rangeFillOpacity: number = 0;
 
+  test: any[];
   // Override colors for certain values
   // customColors: any[] = [
   //   {
@@ -145,11 +104,6 @@ export class AppComponent implements OnInit {
   //   }
   // ];
 
-  // pie
-  showLabels = true;
-  explodeSlices = false;
-  doughnut = false;
-  arcWidth = 0.25;
 
   // line, area
   autoScale = true;
@@ -162,19 +116,8 @@ export class AppComponent implements OnInit {
   marginBottom: number = 40;
   marginLeft: number = 40;
 
-  // gauge
-  gaugeMin: number = 0;
-  gaugeMax: number = 100;
-  gaugeLargeSegments: number = 10;
-  gaugeSmallSegments: number = 5;
-  gaugeTextValue: string = '';
-  gaugeUnits: string = 'alerts';
-  gaugeAngleSpan: number = 240;
-  gaugeStartAngle: number = -120;
-  gaugeShowAxis: boolean = true;
-  gaugeValue: number = 50; // linear gauge value
-  gaugePreviousValue: number = 70;
-
+ 
+ 
   // Combo Chart
   barChart: any[] = barChart;
   lineChartSeries: any[] = lineChartSeries;
@@ -216,32 +159,31 @@ export class AppComponent implements OnInit {
   showRefLabels: boolean = true;
 
   // Supports any number of reference lines.
-  refLines = [
-    { value: 42500, name: 'Maximum' },
-    { value: 37750, name: 'Average' },
-    { value: 33000, name: 'Minimum' }
-  ];
+  // refLines = [
+  //   { value: 42500, name: 'Maximum' },
+  //   { value: 37750, name: 'Average' },
+  //   { value: 33000, name: 'Minimum' }
+  // ];
 
   constructor(public location: Location) {
     this.mathFunction = this.getFunction();
 
     Object.assign(this, {
-      single,
-      multi,
       countries,
       chartGroups,
       colorSets,
       graph: generateGraph(50),
-      bubble,
       plotData: this.generatePlotData(),
       treemap,
-      fiscalYearReport
     });
 
     this.treemapProcess();
 
     this.dateData = generateData(5, false);
     this.dataArmando = generateData2();
+    
+    this.test = this.dataArmando;
+
     this.dateDataWithRange = generateData(2, true);
     this.setColorScheme('cool');
     this.calendarData = this.getCalendarData();

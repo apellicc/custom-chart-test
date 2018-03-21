@@ -17,20 +17,17 @@
         [yAxis]="showYAxis"
         [showXAxisLabel]="showXAxisLabel"
         [showYAxisLabel]="showYAxisLabel"
-        [xAxisLabel]="xAxisLabel"
-        [yAxisLabel]="yAxisLabel"
+
         [autoScale]="autoScale"
         [xScaleMin]="xScaleMin"
         [xScaleMax]="xScaleMax"
         [yScaleMin]="yScaleMin"
         [yScaleMax]="yScaleMax"
         [timeline]="timeline"
-        [showGridLines]="showGridLines"
-        [curve]="curve"
         [rangeFillOpacity]="rangeFillOpacity"
-        [roundDomains]="roundDomains"
         [tooltipDisabled]="tooltipDisabled"
-        (select)="select($event)">
+        (select)="select($event)"
+        [activeEntries]="test">
       </ngx-charts-line-chart>
     
   </div>
