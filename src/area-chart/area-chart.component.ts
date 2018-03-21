@@ -456,7 +456,6 @@ export class AreaChartComponent extends BaseChartComponent {
   }
 
   onActivate(item) {
-    console.log("je ne trouverais jamais ");
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value;
     });
@@ -465,12 +464,10 @@ export class AreaChartComponent extends BaseChartComponent {
     }
 
     this.activeEntries = [ item, ...this.activeEntries ];
-    // this.activate.emit({ value: item, entries: this.activeEntries });
+    this.activate.emit({ value: item, entries: this.activeEntries });
   }
 
   onDeactivate(item) {
-    console.log('jbnr');
-
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value;
     });
@@ -478,15 +475,14 @@ export class AreaChartComponent extends BaseChartComponent {
     this.activeEntries.splice(idx, 1);
     this.activeEntries = [...this.activeEntries];
 
-    // this.deactivate.emit({ value: item, entries: this.activeEntries });
+    this.deactivate.emit({ value: item, entries: this.activeEntries });
   }
 
   deactivateAll() {
-    // console.log('jbnrw3fju3rgb 3');
-    // this.activeEntries = [...this.activeEntries];
-    // for (const entry of this.activeEntries) {
-    //   this.deactivate.emit({ value: entry, entries: [] });
-    // }
-    // this.activeEntries = [];
+    this.activeEntries = [...this.activeEntries];
+    for (const entry of this.activeEntries) {
+      this.deactivate.emit({ value: entry, entries: [] });
+    }
+    this.activeEntries = [];
   }
 }

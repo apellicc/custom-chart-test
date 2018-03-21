@@ -496,18 +496,15 @@ export class AreaChartNormalizedComponent extends BaseChartComponent {
     this.activeEntries.splice(idx, 1);
     this.activeEntries = [...this.activeEntries];
 
-    console.log("is puteeeee")
-
-    // this.deactivate.emit({ value: item, entries: this.activeEntries });
+    this.deactivate.emit({ value: item, entries: this.activeEntries });
   }
 
   deactivateAll() {
-    // console.log("is lalalalasklkl")
-    // this.activeEntries = [...this.activeEntries];
-    // for (const entry of this.activeEntries) {
-    //   this.deactivate.emit({ value: entry, entries: [] });
-    // }
-    // this.activeEntries = [];
+    this.activeEntries = [...this.activeEntries];
+    for (const entry of this.activeEntries) {
+      this.deactivate.emit({ value: entry, entries: [] });
+    }
+    this.activeEntries = [];
   }
 
 }
