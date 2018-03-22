@@ -749,15 +749,6 @@
           <h2>{{model.name}}: {{model.value}}</h2>
         </ng-template>
       </ngx-charts-bar-vertical>
-      <ngx-charts-sparkline
-        *ngIf="chartType === 'sparkline'"
-        [view]="[100,50]"
-        class="chart-container"
-        [scheme]="'flame'"
-        [results]="sparklineData"
-        [animations]="animations"
-        [curve]="curve">
-      </ngx-charts-sparkline>
       <ngx-charts-timeline-filter-bar-chart
         *ngIf="chartType === 'timeline-filter-bar-chart-demo'"
         [view]="view"

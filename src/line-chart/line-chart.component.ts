@@ -31,10 +31,7 @@ import { id } from '../utils/id';
       [showLegend]="legend"
       [legendOptions]="legendOptions"
       [activeEntries]="activeEntries"
-      [animations]="animations"
-      (legendLabelClick)="onClick($event)"
-      (legendLabelActivate)="onActivate($event)"
-      (legendLabelDeactivate)="onDeactivate($event)">
+      [animations]="animations">
       <svg:defs>
         <svg:clipPath [attr.id]="clipPathId">
           <svg:rect
@@ -59,7 +56,7 @@ import { id } from '../utils/id';
           [yScale]="yScale"
           [dims]="dims"
           [showGridLines]="showGridLines"
-          [showLabel]="showYAxisLabel"
+          [showLabel]="showYAxisLabel" 
           [labelText]="yAxisLabel"
           [tickFormatting]="yAxisTickFormatting"
           [referenceLines]="referenceLines"
@@ -74,71 +71,16 @@ import { id } from '../utils/id';
               [yScale]="yScale"
               [colors]="colors"
               [data]="series"
-              [activeEntries]="activeEntries"
               [scaleType]="scaleType"
               [curve]="curve"
-              [rangeFillOpacity]="rangeFillOpacity"
-              [hasRange]="hasRange"
               [animations]="animations"
             />
           </svg:g>
 
-          <svg:g *ngIf="!tooltipDisabled" (mouseleave)="hideCircles()">
-            <svg:g ngx-charts-tooltip-area
-              [dims]="dims"
-              [xSet]="xSet"
-              [xScale]="xScale"
-              [yScale]="yScale"
-              [results]="results"
-              [colors]="colors"
-              [tooltipDisabled]="tooltipDisabled"
-              [tooltipTemplate]="seriesTooltipTemplate"
-              (hover)="updateHoveredVertical($event)"
-            />
 
-            <svg:g *ngFor="let series of results">
-              <svg:g ngx-charts-circle-series
-                [xScale]="xScale"
-                [yScale]="yScale"
-                [colors]="colors"
-                [data]="series"
-                [scaleType]="scaleType"
-                [visibleValue]="hoveredVertical"
-                [activeEntries]="series"
-                [tooltipDisabled]="tooltipDisabled"
-                [tooltipTemplate]="tooltipTemplate"
-                (select)="onClick($event, series)"
-                (activate)="onActivate($event)"
-                (deactivate)="onDeactivate($event)"
-              />
-            </svg:g>
-          </svg:g>
         </svg:g>
       </svg:g>
-      <svg:g ngx-charts-timeline
-        *ngIf="timeline && scaleType != 'ordinal'"
-        [attr.transform]="timelineTransform"
-        [results]="results"
-        [view]="[timelineWidth, height]"
-        [height]="timelineHeight"
-        [scheme]="scheme"
-        [customColors]="customColors"
-        [scaleType]="scaleType"
-        [legend]="legend"
-        (onDomainChange)="updateDomain($event)">
-        <svg:g *ngFor="let series of results; trackBy:trackBy">
-          <svg:g ngx-charts-line-series
-            [xScale]="timelineXScale"
-            [yScale]="timelineYScale"
-            [colors]="colors"
-            [data]="series"
-            [scaleType]="scaleType"
-            [curve]="curve"
-            [hasRange]="hasRange"
-            [animations]="animations"
-          />
-        </svg:g>
-      </svg:g>
+     
     </ngx-charts-chart>
   `,
   styleUrls: ['../common/base-chart.component.scss'],
@@ -276,7 +218,7 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   getXDomain(): any[] {
-    let values = [];
+    const values = [];
 
     for (const results of this.results) {
       for (const d of results.series) {
@@ -286,44 +228,9 @@ export class LineChartComponent extends BaseChartComponent {
       }
     }
 
-    this.scaleType = this.getScaleType(values);
-    let domain = [];
-
-    if (this.scaleType === 'linear') {
-      values = values.map(v => Number(v));
-    }
-
-    let min;
-    let max;
-    if (this.scaleType === 'time' || this.scaleType === 'linear') {
-      min = this.xScaleMin
-        ? this.xScaleMin
-        : Math.min(...values);
-
-      max = this.xScaleMax
-        ? this.xScaleMax
-        : Math.max(...values);
-    }
-
-    if (this.scaleType === 'time') {
-      domain = [new Date(min), new Date(max)];
-      this.xSet = [...values].sort((a, b) => {
-        const aDate = a.getTime();
-        const bDate = b.getTime();
-        if (aDate > bDate) return 1;
-        if (bDate > aDate) return -1;
-        return 0;
-      });
-    } else if (this.scaleType === 'linear') {
-      domain = [min, max];
-      // Use compare function to sort numbers numerically
-      this.xSet = [...values].sort((a, b) => (a - b));
-    } else {
-      domain = values;
-      this.xSet = values;
-    }
-
-    return domain;
+    this.scaleType = 'ordinal';
+    this.xSet = values;
+    return values;
   }
 
   getYDomain(): any[] {
@@ -401,58 +308,6 @@ export class LineChartComponent extends BaseChartComponent {
     return this.roundDomains ? scale.nice() : scale;
   }
 
-  getScaleType(values): string {
-    let date = true;
-    let num = true;
-
-    for (const value of values) {
-      if (!this.isDate(value)) {
-        date = false;
-      }
-
-      if (typeof value !== 'number') {
-        num = false;
-      }
-    }
-
-    if (date) return 'time';
-    if (num) return 'linear';
-    return 'ordinal';
-  }
-
-  isDate(value): boolean {
-    if (value instanceof Date) {
-      return true;
-    }
-
-    return false;
-  }
-
-  updateDomain(domain): void {
-    this.filteredDomain = domain;
-    this.xDomain = this.filteredDomain;
-    this.xScale = this.getXScale(this.xDomain, this.dims.width);
-  }
-
-  updateHoveredVertical(item): void {
-    this.hoveredVertical = item.value;
-    this.deactivateAll();
-  }
-
-  @HostListener('mouseleave')
-  hideCircles(): void {
-    this.hoveredVertical = null;
-    this.deactivateAll();
-  }
-
-  onClick(data, series?): void {
-    if (series) {
-      data.series = series.name;
-    }
-
-    this.select.emit(data);
-  }
-
   trackBy(index, item): string {
     return item.name;
   }
@@ -494,38 +349,5 @@ export class LineChartComponent extends BaseChartComponent {
   updateXAxisHeight({ height }): void {
     this.xAxisHeight = height;
     this.update();
-  }
-
-  onActivate(item) {
-    this.deactivateAll();
-
-    const idx = this.activeEntries.findIndex(d => {
-      return d.name === item.name && d.value === item.value;
-    });
-    if (idx > -1) {
-      return;
-    }
-
-    this.activeEntries = [item];
-    this.activate.emit({ value: item, entries: this.activeEntries });
-  }
-
-  onDeactivate(item) {
-    const idx = this.activeEntries.findIndex(d => {
-      return d.name === item.name && d.value === item.value;
-    });
-
-    this.activeEntries.splice(idx, 1);
-    this.activeEntries = [...this.activeEntries];
-
-    this.deactivate.emit({ value: item, entries: this.activeEntries });
-  }
-
-  deactivateAll() {
-    this.activeEntries = [...this.activeEntries];
-    for (const entry of this.activeEntries) {
-      this.deactivate.emit({ value: entry, entries: [] });
-    }
-    this.activeEntries = [];
   }
 }
