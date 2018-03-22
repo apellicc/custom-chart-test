@@ -39,17 +39,7 @@ const twoPI = 2 * Math.PI;
       (legendLabelDeactivate)="onDeactivate($event)">
       <svg:g class="polar-chart chart" [attr.transform]="transform">
         <svg:g [attr.transform]="transformPlot">
-          <svg:circle
-            class="polar-chart-background"
-            cx="0" cy="0"
-            [attr.r]="this.outerRadius" />
-          <svg:g *ngIf="showGridLines">
-            <svg:circle
-              *ngFor="let r of radiusTicks"
-              class="gridline-path radial-gridline-path"
-              cx="0" cy="0"
-              [attr.r]="r" />
-          </svg:g>
+
           <svg:g *ngIf="xAxis">
             <svg:g ngx-charts-pie-label
               *ngFor="let tick of thetaTicks"

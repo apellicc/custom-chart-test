@@ -15,11 +15,7 @@ import { sortLinear, sortByTime, sortByDomain } from '../utils/sort';
   template: `
     <svg:g>
       <defs>
-        <svg:g ngx-charts-svg-linear-gradient *ngIf="hasGradient"
-          orientation="vertical"
-          [name]="gradientId"
-          [stops]="gradientStops"
-        />
+       
       </defs>
       <svg:g ngx-charts-area
         class="line-highlight"
@@ -30,7 +26,7 @@ import { sortLinear, sortByTime, sortByDomain } from '../utils/sort';
         [startOpacity]="0"
         [gradient]="true"
         [stops]="areaGradientStops"
-        [class.active]="isActive(data)"
+        [class.active]="true"
         [class.inactive]="isInactive(data)"
       />
       <svg:g ngx-charts-line
@@ -39,20 +35,24 @@ import { sortLinear, sortByTime, sortByDomain } from '../utils/sort';
         [path]="path"
         [stroke]="stroke"
         [animations]="animations"
-        [class.active]="isActive(data)"
-        [class.inactive]="isInactive(data)"
+        [class.active]="true"
+        [class.inactive]="false"
       />
-     <svg:g ngx-charts-area
-        *ngIf="hasRange"
-        class="line-series-range"
-        [data]="data"
-        [path]="outerPath"
-        [fill]="hasGradient ? gradientUrl : colors.getColor(data.name)"
-        [class.active]="isActive(data)"
-        [class.inactive]="isInactive(data)"
-        [opacity]="rangeFillOpacity"
-        [animations]="animations"
-      />
+      <svg:g ngx-charts-circle
+        *ngFor="let circle of circles"
+        class="circle"
+        [cx]="circle.cx"
+        [cy]="circle.cy"
+        [r]="circleRadius"
+        [fill]="circle.color"
+        [style.opacity]="1"
+        ngx-tooltip
+        [tooltipDisabled]="tooltipDisabled"
+        [tooltipPlacement]="'top'"
+        tooltipType="tooltip"
+        [tooltipTemplate]="tooltipTemplate"
+        [tooltipContext]="circle.data">
+      </svg:g>
     </svg:g>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -69,6 +69,9 @@ export class LineSeriesComponent implements OnChanges {
   @Input() rangeFillOpacity: number;
   @Input() hasRange: boolean;
   @Input() animations: boolean = true;
+
+  circles: any[];
+  circleRadius: number = 3;
 
   path: string;
   outerPath: string;
@@ -93,12 +96,8 @@ export class LineSeriesComponent implements OnChanges {
     this.path = lineGen(data) || '';
 
     const areaGen = this.getAreaGenerator();
-    this.areaPath = areaGen(data) || '';
+    this.areaPath = areaGen(data);
 
-    if (this.hasRange) {
-      const range = this.getRangeGenerator();
-      this.outerPath = range(data) || '';
-    }
 
     if (this.hasGradient) {
       this.stroke = this.gradientUrl;
@@ -111,8 +110,62 @@ export class LineSeriesComponent implements OnChanges {
     } else {
       this.stroke = this.colors.getColor(this.data.name);
     }
-  }
 
+    const linearScaleType = this.colors.scaleType === 'linear';
+
+    const seriesName = this.data.name;
+
+    this.circles = this.data.series.map((d, i) => {
+      const value = d.value;
+      const label = d.name;
+      // const tooltipLabel = formatLabel(label);
+
+      if (value) {
+        let cx;
+        if (this.scaleType === 'time') {
+          cx = this.xScale(label);
+        } else if (this.scaleType === 'linear') {
+          cx = this.xScale(Number(label));
+        } else {
+          cx = this.xScale(label);
+        }
+
+        const cy = this.yScale(value);
+        const radius = 5;
+        const height = this.yScale.range()[0] - cy;
+
+        const opacity = 1;
+        // if (label && this.visibleValue && label.toString() === this.visibleValue.toString()) {
+          // opacity = 1;
+        // }
+
+        const color = this.colors.getColor(seriesName);        
+
+        const cData = {
+          series: seriesName,
+          value,
+          name: label
+        };
+
+        return {
+          classNames: [`circle-data-${i}`],
+          value,
+          label,
+          data: cData,
+          cx,
+          cy,
+          radius,
+          height,
+          color,
+          opacity,
+          seriesName,
+          min: d.min,
+          max: d.max
+        };
+      }
+    }).filter((circle) => circle !== undefined);
+  }
+ 
   getLineGenerator(): any {
     return line<any>()
       .x(d => {
@@ -131,24 +184,6 @@ export class LineSeriesComponent implements OnChanges {
       .curve(this.curve);
   }
 
-  getRangeGenerator(): any {
-    return area<any>()
-        .x(d => {
-          const label = d.name;
-          let value;
-          if (this.scaleType === 'time') {
-            value = this.xScale(label);
-          } else if (this.scaleType === 'linear') {
-            value = this.xScale(Number(label));
-          } else {
-            value = this.xScale(label);
-          }
-          return value;
-        })
-        .y0(d => this.yScale(d.min ? d.min : d.value))
-        .y1(d => this.yScale(d.max ? d.max : d.value))
-        .curve(this.curve);
-  }
 
   getAreaGenerator(): any {
     const xProperty = (d) => {

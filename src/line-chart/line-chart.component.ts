@@ -104,7 +104,7 @@ import { id } from '../utils/id';
                 [data]="series"
                 [scaleType]="scaleType"
                 [visibleValue]="hoveredVertical"
-                [activeEntries]="activeEntries"
+                [activeEntries]="series"
                 [tooltipDisabled]="tooltipDisabled"
                 [tooltipTemplate]="tooltipTemplate"
                 (select)="onClick($event, series)"

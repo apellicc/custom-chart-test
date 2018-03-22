@@ -630,7 +630,7 @@
           [tooltipDisabled]="tooltipDisabled"
           (select)="select($event)">
         </ngx-charts-line-chart>
-        <p></p>
+        <p>erer</p>
         <ngx-charts-polar-chart
           style="position: static; display: inline-block; transform: none;"
           [view]="view"
@@ -643,8 +643,8 @@
           [legendTitle]="legendTitle"
           (legendLabelClick)="onLegendLabelClick($event)"
           [gradient]="gradient"
-          [xAxis]="false"
-          [yAxis]="true"
+          [xAxis]="showXAxis"
+          [yAxis]="showYAxis"
           [showXAxisLabel]="false"
           [showYAxisLabel]="false"
           [xAxisLabel]="'angle'"
@@ -655,7 +655,7 @@
           [roundDomains]="roundDomains"
           [tooltipDisabled]="tooltipDisabled"
           [showSeriesOnHover]="showSeriesOnHover"
-          [curve]="curves['Cardinal Closed']"
+          [curve]="curves['Cardinal']"
           (select)="select($event)">
         </ngx-charts-polar-chart>
       </div>
