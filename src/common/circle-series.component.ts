@@ -23,13 +23,30 @@ import { ColorHelper } from '.';
   selector: 'g[ngx-charts-circle-series]',
   template: `
     <svg:g *ngIf="circle">
+      <defs>
+        <svg:g ngx-charts-svg-linear-gradient
+          orientation="vertical"
+          [name]="gradientId"
+          [stops]="circle.gradientStops"
+        />
+      </defs>
+      <svg:rect
+        *ngIf="barVisible && type === 'standard'"
+        [@animationState]="'active'"
+        [attr.x]="circle.cx - circle.radius"
+        [attr.y]="circle.cy"
+        [attr.width]="circle.radius * 2"
+        [attr.height]="circle.height"
+        [attr.fill]="gradientFill"
+        class="tooltip-bar"
+      />
       <svg:g ngx-charts-circle
         class="circle"
         [cx]="circle.cx"
         [cy]="circle.cy"
         [r]="circle.radius"
         [fill]="circle.color"
-        [class.active]="true"
+        [class.active]="isActive({name: circle.seriesName})"
         [pointerEvents]="circle.value === 0 ? 'none': 'all'"
         [data]="circle.value"
         [classNames]="circle.classNames"
@@ -47,16 +64,16 @@ import { ColorHelper } from '.';
     </svg:g>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // animations: [
-  //   trigger('animationState', [
-  //     transition(':enter', [
-  //       style({
-  //         opacity: 0,
-  //       }),
-  //       animate(250, style({opacity: 1}))
-  //     ])
-  //   ])
-  // ]
+  animations: [
+    trigger('animationState', [
+      transition(':enter', [
+        style({
+          opacity: 0,
+        }),
+        animate(250, style({opacity: 1}))
+      ])
+    ])
+  ]
 })
 export class CircleSeriesComponent implements OnChanges, OnInit {
 
@@ -216,7 +233,11 @@ export class CircleSeriesComponent implements OnChanges, OnInit {
   }
 
   isActive(entry): boolean {
-    return true 
+    if(!this.activeEntries) return false;
+    const item = this.activeEntries.find(d => {
+      return entry.name === d.name;
+    });
+    return item !== undefined;
   }
 
   activateCircle(): void {
@@ -226,8 +247,8 @@ export class CircleSeriesComponent implements OnChanges, OnInit {
 
   deactivateCircle(): void {
     this.barVisible = false;
-    this.circle.opacity = 1;
-    // this.deactivate.emit({name: this.data.name});
+    this.circle.opacity = 0;
+    this.deactivate.emit({name: this.data.name});
   }
 
 }

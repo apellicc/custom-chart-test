@@ -53,7 +53,7 @@ export class CircleComponent implements OnChanges {
 
   @HostListener('mouseleave')
   onMouseLeave(): void {
-    // this.deactivate.emit(this.data);
+    this.deactivate.emit(this.data);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
